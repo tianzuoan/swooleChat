@@ -18,7 +18,7 @@ class Mysql
     {
         //读取配置文件
         $conf = Config::getInstance()->getConf('MYSQL');
-        $this->db = new \MysqliDb($conf['host'],$conf['username'],$conf['password'],$conf['db']);
+        $this->db = new \Mysqli($conf['host'],$conf['username'],$conf['password'],$conf['db']);
     }
     //返回实例化的对象
     function getDb()

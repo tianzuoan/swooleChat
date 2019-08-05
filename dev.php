@@ -11,7 +11,7 @@ return [
     'MAIN_SERVER' => [
         'LISTEN_ADDRESS' => '0.0.0.0',
         'PORT' => 9501,
-        'SERVER_TYPE' => EASYSWOOLE_SERVER, //可选为 EASYSWOOLE_SERVER  EASYSWOOLE_WEB_SERVER EASYSWOOLE_WEB_SOCKET_SERVER,EASYSWOOLE_REDIS_SERVER
+        'SERVER_TYPE' => EASYSWOOLE_WEB_SOCKET_SERVER, //可选为 EASYSWOOLE_SERVER  EASYSWOOLE_WEB_SERVER EASYSWOOLE_WEB_SOCKET_SERVER,EASYSWOOLE_REDIS_SERVER
         'SOCK_TYPE' => SWOOLE_TCP,
         'RUN_MODEL' => SWOOLE_PROCESS,
         'SETTING' => [// Swoole Server的运行配置（ 完整配置可见[Swoole文档](https://wiki.swoole.com/wiki/page/274.html) ）
@@ -42,9 +42,9 @@ return [
         'nodeId' => null
     ],
     'MYSQL' => [
-        'host' => '10.240.0.61',
+        'host' => '127.0.0.1',
         'username' => 'root',
-        'password' => 'root123',
+        'password' => 'root',
         'db' => 'easyswoole',
         'port' => 3306,
         'charset' => 'utf8mb'

@@ -1,4 +1,5 @@
-baseUrl = 'www.weiliao.com';
+// baseUrl = 'www.weiliao.com';
+baseUrl = '127.0.0.1:9501';
 /*
 * 设置cookie
 * */
