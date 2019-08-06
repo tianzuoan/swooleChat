@@ -1,20 +1,23 @@
 <?php
 namespace App\Socket\Logic;
 
-use EasySwoole\Core\Component\Di;
-use EasySwoole\Core\Swoole\ServerManager;
-use EasySwoole\Core\Swoole\Task\TaskManager;
+use EasySwoole\EasySwoole\ServerManager;
+use EasySwoole\EasySwoole\Swoole\Task\TaskManager;
+use EasySwoole\RedisPool\Redis;
 
 
 class Room
 {
     /**
      * 获取Redis连接实例
-     * @return object Redis
+     *
+     * @return mixed|null
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     protected static function getRedis()
     {
-        return Di::getInstance()->get('REDIS')->handler();
+        return Redis::getInstance()->pool('redis')::defer();
     }
 
     /**
@@ -96,7 +99,7 @@ class Room
     /**
      * 获取room中全部UserId
      * @param  int    $roomId roomId
-     * @return array         房间中UserId
+     * @return bool
      */
     public static function selectRoomOneUser(int $roomId,int $fd)
     {
@@ -124,7 +127,7 @@ class Room
                     'userId'=>$userModel[0],
                     'message'=>$userModel[1].'退出房间'
                 ]);
-                ServerManager::getInstance()->getServer()->push($fd,$message);
+                ServerManager::getInstance()->getSwooleServer()->push($fd,$message);
             }
         });
         self::getRedis()->hDel("room:{$roomId}", $fd);

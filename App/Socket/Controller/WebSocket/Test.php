@@ -2,11 +2,10 @@
 namespace App\Socket\Controller\WebSocket;
 
 use App\Socket\Logic\Room;
-use EasySwoole\Core\Socket\AbstractInterface\WebSocketController;
-use EasySwoole\Core\Swoole\ServerManager;
-use EasySwoole\Core\Swoole\Task\TaskManager;
+use EasySwoole\EasySwoole\ServerManager;
+use EasySwoole\EasySwoole\Swoole\Task\TaskManager;
 
-class Test extends WebSocketController {
+class Test {
 
     /**
      * 访问找不到的action
@@ -45,7 +44,7 @@ class Test extends WebSocketController {
                     'userName'=>$userName,
                     'message'=>$userName.'进入房间'
                 ]);
-                ServerManager::getInstance()->getServer()->push($fd,$message);
+                ServerManager::getInstance()->getSwooleServer()->push($fd,$message);
             }
         });
     }
@@ -68,7 +67,7 @@ class Test extends WebSocketController {
                 'message'=> Room::getUserName($fromUserId).'说:'.$message
             ]);
             foreach ($list as $fd) {
-                ServerManager::getInstance()->getServer()->push($fd, $resultMessage);
+                ServerManager::getInstance()->getSwooleServer()->push($fd, $resultMessage);
             }
         });
     }
@@ -91,11 +90,11 @@ class Test extends WebSocketController {
             ]);
             $fdList = Room::getUserFd($userId);
             foreach ($fdList as $fd) {
-                ServerManager::getInstance()->getServer()->push($fd, $resultMessage);
+                ServerManager::getInstance()->getSwooleServer()->push($fd, $resultMessage);
             }
             $fdList = Room::getUserFd($fromUserId);
             foreach ($fdList as $fd) {
-                ServerManager::getInstance()->getServer()->push($fd, $resultMessage);
+                ServerManager::getInstance()->getSwooleServer()->push($fd, $resultMessage);
             }
         });
     }

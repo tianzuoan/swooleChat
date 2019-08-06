@@ -57,6 +57,7 @@
             return false;
         }
         var userData = getAjax('member/login',{"mobile":mobile,"password":password});
+        console.log(userData);
         if(userData.code != 200){
             $('#login').attr('value',userData.msg).css('background','red');
         }else{

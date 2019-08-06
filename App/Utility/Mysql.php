@@ -10,6 +10,7 @@ namespace App\Utility;
 
 
 use EasySwoole\EasySwoole\Config;
+use EasySwoole\Mysqli\Mysqli;
 
 class Mysql
 {
@@ -17,8 +18,8 @@ class Mysql
     function __construct()
     {
         //读取配置文件
-        $conf = Config::getInstance()->getConf('MYSQL');
-        $this->db = new \Mysqli($conf['host'],$conf['username'],$conf['password'],$conf['db']);
+        $conf = new \EasySwoole\Mysqli\Config(Config::getInstance()->getConf('MYSQL'));
+        $this->db = $db = new Mysqli($conf);
     }
     //返回实例化的对象
     function getDb()

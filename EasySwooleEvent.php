@@ -14,6 +14,7 @@ use EasySwoole\EasySwoole\Swoole\EventRegister;
 use EasySwoole\EasySwoole\AbstractInterface\Event;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+use EasySwoole\RedisPool\Redis;
 use Swoole\Server;
 use Swoole\WebSocket\Server as WebSocketServer;
 
@@ -24,6 +25,15 @@ class EasySwooleEvent implements Event
     {
         // TODO: Implement initialize() method.
         date_default_timezone_set('Asia/Shanghai');
+        $configData = Config::getInstance()->getConf('REDIS');
+        $config = new \EasySwoole\RedisPool\Config($configData);
+//        $config->setOptions(['serialize' => true]);
+        /**
+         * 这里注册的名字叫redis，你可以注册多个，比如redis2,redis3
+         */
+        $poolConf = Redis::getInstance()->register('redis', $config);
+        $poolConf->setMaxObjectNum($configData['maxObjectNum']);
+        $poolConf->setMinObjectNum($configData['minObjectNum']);
     }
 
     public static function mainServerCreate(EventRegister $register)
@@ -104,7 +114,7 @@ class EasySwooleEvent implements Event
         // }
 
 
-        if (!isset($request->cookie['token']) || !isset($request->cookie['user_id'])) {
+        /*if (!isset($request->cookie['token']) || !isset($request->cookie['user_id'])) {
             var_dump('shake fai1 1');
             $response->end();
             return false;
@@ -129,7 +139,7 @@ class EasySwooleEvent implements Event
             var_dump('shake fai1 4');
             $response->end();
             return false;
-        }
+        }*/
         echo $request->header['sec-websocket-key'];
         $key = base64_encode(sha1(
             $request->header['sec-websocket-key'] . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11',
@@ -173,6 +183,17 @@ class EasySwooleEvent implements Event
     public static function onRequest(Request $request, Response $response): bool
     {
         // TODO: Implement onRequest() method.
+        $origin = $request->getSwooleRequest()->server['HTTP_ORIGIN'] ?? '*';
+        $allow_origin = [
+            'http://localhost:9501',
+        ];
+//        if (in_array($origin, $allow_origin)) {
+        $response->withHeader('Access-Control-Allow-Origin', $origin);
+        $response->withHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, Cookie, X-CSRF-TOKEN, Accept, Authorization, X-XSRF-TOKEN');
+        $response->withHeader('Access-Control-Expose-Headers', 'Authorization, authenticated');
+        $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, OPTIONS');
+        $response->withHeader('Access-Control-Allow-Credentials', 'true');
+//        }
         return true;
     }
 
