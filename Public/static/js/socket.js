@@ -26,7 +26,7 @@ function analysisMessage(message){
 }
 
 function connection(){
-    var wsServer = "ws://"+baseUrl;
+    var wsServer = "ws://"+baseUrl+":9501";
     ws = new WebSocket(wsServer);
     ws.onopen = function (evt) {
         console.log("connection success")

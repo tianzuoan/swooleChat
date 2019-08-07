@@ -1,5 +1,4 @@
-// baseUrl = 'www.weiliao.com';
-baseUrl = '127.0.0.1:9501';
+baseUrl = 'swoolechat.com';
 
 /*
 * 设置cookie

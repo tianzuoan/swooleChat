@@ -1,11 +1,19 @@
 <?php
+
 namespace App\Socket\Controller\WebSocket;
 
 use App\Socket\Logic\Room;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\EasySwoole\Swoole\Task\TaskManager;
+use EasySwoole\Socket\AbstractInterface\Controller;
 
-class Test {
+class Test extends Controller
+{
+
+    public function client()
+    {
+        return $this->caller()->getClient();
+    }
 
     /**
      * 访问找不到的action
@@ -14,7 +22,11 @@ class Test {
      */
     public function actionNotFound(?string $actionName)
     {
-        $this->response()->write("action call {$actionName} not found");
+        $message = "action call {$actionName} not found";
+        $this->response()->setMessage($message);
+//        $this->response()->isFinish();
+//        $this->response()->write("action call {$actionName} not found");
+        ServerManager::getInstance()->getSwooleServer()->push($this->client()->getFd(), $message);
     }
 
     public function index()
@@ -26,25 +38,25 @@ class Test {
      */
     public function intoRoom()
     {
-        $param = $this->request()->getArg('data');
+        $param = $this->caller()->getArgs();
         $userId = $param['userId'];
         $userName = $param['name'];
         $roomId = $param['roomId'];
         $fd = $this->client()->getFd();
-        Room::login($userId,$fd);
+        Room::login($userId, $fd);
         Room::joinRoom($roomId, $fd, $userId, $userName);
         //异步推送
-        TaskManager::async(function ()use($userId,$userName,$roomId){
+        TaskManager::async(function () use ($userId, $userName, $roomId) {
             $list = Room::selectRoomFd($roomId);
             foreach ($list as $fd) {
                 $message = json_encode([
-                    'type'=>'system',
-                    'action'=>'join_room',
-                    'userId'=>$userId,
-                    'userName'=>$userName,
-                    'message'=>$userName.'进入房间'
+                    'type' => 'system',
+                    'action' => 'join_room',
+                    'userId' => $userId,
+                    'userName' => $userName,
+                    'message' => $userName . '进入房间'
                 ]);
-                ServerManager::getInstance()->getSwooleServer()->push($fd,$message);
+                ServerManager::getInstance()->getSwooleServer()->push($fd, $message);
             }
         });
     }
@@ -54,17 +66,17 @@ class Test {
      */
     public function sendToRoom()
     {
-        $param = $this->request()->getArg('data');
+        $param = $this->caller()->getArgs();
         $message = $param['message'];
         $roomId = $param['roomId'];
         $fromUserId = $param['fromUserId'];
         //异步推送
-        TaskManager::async(function ()use($fromUserId,$roomId, $message){
+        TaskManager::async(function () use ($fromUserId, $roomId, $message) {
             $list = Room::selectRoomFd($roomId);
             $resultMessage = json_encode([
-                'type'=>'system',
-                'action'=>'send_to_room',
-                'message'=> Room::getUserName($fromUserId).'说:'.$message
+                'type' => 'system',
+                'action' => 'send_to_room',
+                'message' => Room::getUserName($fromUserId) . '说:' . $message
             ]);
             foreach ($list as $fd) {
                 ServerManager::getInstance()->getSwooleServer()->push($fd, $resultMessage);
@@ -77,16 +89,16 @@ class Test {
      */
     public function sendToUser()
     {
-        $param = $this->request()->getArg('data');
+        $param = $this->caller()->getArgs();
         $message = $param['message'];
         $fromUserId = $param['fromUserId'];
         $userId = $param['userId'];
         //异步推送
-        TaskManager::async(function ()use($fromUserId,$userId, $message){
+        TaskManager::async(function () use ($fromUserId, $userId, $message) {
             $resultMessage = json_encode([
-                'type'=>'system',
-                'action'=>'send_to_user',
-                'message'=>Room::getUserName($fromUserId).'说:'.$message
+                'type' => 'system',
+                'action' => 'send_to_user',
+                'message' => Room::getUserName($fromUserId) . '说:' . $message
             ]);
             $fdList = Room::getUserFd($userId);
             foreach ($fdList as $fd) {

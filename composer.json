@@ -9,6 +9,7 @@
     "easyswoole/swoole-ide-helper": "^1.3",
     "easyswoole/mysqli": "^1.2",
     "easyswoole/redis-pool": "^1.0",
-    "easyswoole/socket": "^1.1"
+    "easyswoole/socket": "^1.1",
+    "ext-json": "*"
   }
 }

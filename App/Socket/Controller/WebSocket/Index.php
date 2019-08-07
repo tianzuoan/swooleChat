@@ -1,12 +1,14 @@
 <?php
 namespace App\Socket\Controller\WebSocket;
 
-use EasySwoole\Core\Socket\AbstractInterface\WebSocketController;
 
-class Index extends WebSocketController{
+
+use EasySwoole\Socket\AbstractInterface\Controller;
+
+class Index extends Controller {
     /**
      * 访问找不到的action
-     * @param  ?string $actionName 找不到的name名
+     * @param string|null $actionName
      * @return string
      */
     public function actionNotFound(?string $actionName)

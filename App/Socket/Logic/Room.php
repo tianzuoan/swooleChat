@@ -22,10 +22,13 @@ class Room
 
     /**
      * 进入房间
-     * @param  int    $roomId 房间id
-     * @param  int    $userId userId
-     * @param  int    $fd     连接id
-     * @return
+     * @param int $roomId 房间id
+     * @param int $fd 连接id
+     * @param int $userId userId
+     * @param string $userName
+     * @return void
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function joinRoom(int $roomId, int $fd ,int $userId, string $userName)
     {
@@ -36,9 +39,11 @@ class Room
 
     /**
      * 登录
-     * @param  int    $userId 用户id
-     * @param  int    $fd     连接id
-     * @return bool
+     * @param int $userId 用户id
+     * @param int $fd 连接id
+     * @return void
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function login(int $userId, int $fd)
     {
@@ -47,8 +52,10 @@ class Room
 
     /**
      * 获取用户
-     * @param  int    $fd
+     * @param int $userId
      * @return array  $user
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function getUserName(int $userId)
     {
@@ -57,8 +64,10 @@ class Room
 
     /**
      * 获取用户fd
-     * @param  int    $userId
+     * @param int $userId
      * @return array         用户fd集
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function getUserFd(int $userId)
     {
@@ -67,8 +76,10 @@ class Room
 
     /**
      * 获取RoomId
-     * @param  int    $fd
+     * @param int $fd
      * @return int    RoomId
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function getRoomId(int $fd)
     {
@@ -78,8 +89,10 @@ class Room
 
     /**
      * 获取room中全部fd
-     * @param  int    $roomId roomId
+     * @param int $roomId roomId
      * @return array         房间中fd
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function selectRoomFd(int $roomId)
     {
@@ -88,8 +101,10 @@ class Room
 
     /**
      * 获取room中全部UserId
-     * @param  int    $roomId roomId
+     * @param int $roomId roomId
      * @return array         房间中UserId
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function selectRoomAllUser(int $roomId)
     {
@@ -98,8 +113,11 @@ class Room
 
     /**
      * 获取room中全部UserId
-     * @param  int    $roomId roomId
+     * @param int $roomId roomId
+     * @param int $fd
      * @return bool
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function selectRoomOneUser(int $roomId,int $fd)
     {
@@ -109,11 +127,14 @@ class Room
         }
         return explode(",",$user);
     }
+
     /**
      * 退出room
-     * @param  int    $roomId roomId
-     * @param  int    $fd     fd
-     * @return
+     * @param int $roomId roomId
+     * @param int $fd fd
+     * @return void
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function exitRoom(int $roomId, int $fd)
     {
@@ -136,7 +157,9 @@ class Room
 
     /**
      * 关闭连接
-     * @param  string $fd 链接id
+     * @param int $fd 链接id
+     * @throws \EasySwoole\Component\Pool\Exception\PoolEmpty
+     * @throws \EasySwoole\Component\Pool\Exception\PoolException
      */
     public static function close(int $fd)
     {

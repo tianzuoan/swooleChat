@@ -9,12 +9,14 @@
 namespace EasySwoole\EasySwoole;
 
 
+use App\Socket\Parser\WebSocket;
 use App\Utility\SysTools;
 use EasySwoole\EasySwoole\Swoole\EventRegister;
 use EasySwoole\EasySwoole\AbstractInterface\Event;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
 use EasySwoole\RedisPool\Redis;
+use EasySwoole\Socket\Dispatcher;
 use Swoole\Server;
 use Swoole\WebSocket\Server as WebSocketServer;
 
@@ -140,7 +142,7 @@ class EasySwooleEvent implements Event
             $response->end();
             return false;
         }*/
-        echo $request->header['sec-websocket-key'];
+//        echo $request->header['sec-websocket-key'];
         $key = base64_encode(sha1(
             $request->header['sec-websocket-key'] . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11',
             true
@@ -169,10 +171,21 @@ class EasySwooleEvent implements Event
 
     }
 
+    /**
+     * @param WebSocketServer $server
+     * @param $frame
+     * @throws \EasySwoole\Socket\Exception\Exception
+     */
     public static function onMessage(WebSocketServer $server, $frame)
     {
         echo "receive from {$frame->fd}:{$frame->data},opcode:{$frame->opcode},fin:{$frame->finish}\n";
-        $server->push($frame->fd, "this is server");
+//        $data = ['type' => 'system', 'action' => 'join_room', 'message' => json_decode($frame->data)->data->message];
+        $webScoketConfig = new \EasySwoole\Socket\Config();
+        $webScoketConfig->setType($webScoketConfig::WEB_SOCKET);
+        $webScoketConfig->setParser(WebSocket::class);
+        $disPatcher = new Dispatcher($webScoketConfig);
+        $disPatcher->dispatch($server, $frame->data, $frame);
+//        $server->push($frame->fd, json_encode($data));
     }
 
     public static function onClose(Server $server, $fd)
