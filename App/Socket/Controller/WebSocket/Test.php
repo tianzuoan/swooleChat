@@ -61,6 +61,35 @@ class Test extends Controller
         });
     }
 
+    public function exitRoom()
+    {
+        $param = $this->caller()->getArgs();
+        $fd = $param['fd'];
+        $this->client()->setFd($fd);
+        $fd = $this->client()->getFd();
+        $roomId = Room::getRoomId($fd);
+        if (empty($roomId)) {
+            echo "client {$fd}确实断开连接了！" . PHP_EOL;
+            return;
+        }
+        $user = Room::selectRoomOneUser($roomId, $fd);
+        Room::close($fd);
+        //异步推送
+        TaskManager::async(function () use ($fd, $roomId, $user) {
+            $list = Room::selectRoomFd($roomId);
+            foreach ($list as $fd) {
+                $message = json_encode([
+                    'type' => 'system',
+                    'action' => 'exit_room',
+                    'userId' => $user['userId'],
+                    'userName' => $user['userName'],
+                    'message' => $user['userName'] . '离开房间'
+                ]);
+                ServerManager::getInstance()->getSwooleServer()->push($fd, $message);
+            }
+        });
+    }
+
     /**
      * 发送信息到房间
      */

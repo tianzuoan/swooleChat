@@ -191,6 +191,17 @@ class EasySwooleEvent implements Event
     public static function onClose(Server $server, $fd)
     {
         echo "client {$fd} closed\n";
+
+//        $data = ['type' => 'system', 'action' => 'join_room', 'message' => json_decode($frame->data)->data->message];
+        $webScoketConfig = new \EasySwoole\Socket\Config();
+        $webScoketConfig->setType($webScoketConfig::WEB_SOCKET);
+        $webScoketConfig->setParser(WebSocket::class);
+        $disPatcher = new Dispatcher($webScoketConfig);
+        $data = ['controller'=>'Test','action'=>'exitRoom','data'=>[
+            'fd'=>$fd
+        ]];
+        $disPatcher->dispatch($server, json_encode($data));
+//        $server->push($frame->fd, json_encode($data));
     }
 
     public static function onRequest(Request $request, Response $response): bool
